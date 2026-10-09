@@ -114,10 +114,9 @@ header{display:flex;align-items:center;justify-content:space-between;gap:15px;fl
       <div><label>Hệ Pokémon</label><input id="newPokeType" placeholder="Ví dụ: Fire / Flying hoặc Lửa / Bay"></div>
       <div><label>Danh mục Pokémon</label><select id="newPokeVariant"><option value="standard">Pokémon thường</option><option value="Mega">Mega Pokémon</option><option value="Shiny">Shiny Pokémon</option></select></div>
       <div><label>Bậc Pokémon</label><select id="newPokeTier"><option>B</option><option>A</option><option>S</option><option>S+</option><option>SS</option></select></div>
-      <div class="field-full"><label>Đường dẫn ảnh (nếu có)</label><input id="newPokeUrl" placeholder="https://..."></div>
-      <div class="field-full"><label>Hoặc tải ảnh từ thiết bị</label><input id="newPokeFile" type="file" accept="image/*"><p class="sub">Ảnh sẽ được tải lên Firebase Storage và đường dẫn được lưu trong kho dữ liệu chung.</p></div>
+      <div class="field-full"><label>Đường dẫn ảnh trên GitHub Pages (không bắt buộc)</label><input id="newPokeUrl" placeholder="images/pokemon/gengar.png hoặc URL đầy đủ"><p class="sub">Đưa ảnh vào thư mục images/pokemon trong kho GitHub, rồi nhập đường dẫn ảnh tại đây. Không cần bật Firebase Storage hoặc thanh toán.</p></div>
     </div><div class="toolbar"><button class="primary" onclick="addCustomPokemon()">Thêm vào danh sách</button><button onclick="hideCustomForm()">Hủy</button></div>
-    <p class="sub">Ảnh tải lên sẽ được lưu trên Firebase Storage để các tài khoản khác xem được. Mỗi ảnh tối đa 5 MB; cần bật Firebase Storage và cập nhật Rules.</p>
+    <p class="sub">Ảnh phải được tải lên kho GitHub trước. Trang quản trị chỉ lưu đường dẫn ảnh vào Firestore; không tải tệp trực tiếp lên Firebase.</p>
   </div>
   <div class="sub">Mẹo: nút “+ Đội hình” thêm Pokémon vào vị trí trống đầu tiên. Chỉ quản trị viên mới có thể thêm hoặc xóa Pokémon trong danh mục chung.</div>
   <div id="pokemonCatalog" class="catalog-grid"><div class="empty">Nhấn “Tải danh sách Pokémon” để nạp danh sách trực tuyến, hoặc thêm Pokémon riêng.</div></div>
@@ -132,7 +131,7 @@ header{display:flex;align-items:center;justify-content:space-between;gap:15px;fl
     <hr style="border:0;border-top:1px solid var(--line);margin:22px 0">
     <div class="row" style="align-items:center"><div><h3>Kho bảo vật</h3><div class="sub">Tạo danh mục bảo vật của game và chọn cho từng Pokémon.</div></div><div style="max-width:210px"><button id="adminAddRelicBtn" class="primary hidden" style="width:100%" onclick="toggleRelicForm()">＋ Thêm bảo vật</button></div></div>
     <div id="relicForm" class="panel hidden admin-only" style="margin:12px 0;background:#0d1224">
-      <div class="form-grid"><div><label>Tên bảo vật *</label><input id="newRelicName" placeholder="Tên bảo vật"></div><div><label>Chỉ số / mô tả</label><input id="newRelicDesc" placeholder="Ví dụ: Tăng tốc độ..."></div><div class="field-full"><label>Đường dẫn ảnh (nếu có)</label><input id="newRelicUrl" placeholder="https://..."></div><div class="field-full"><label>Hoặc tải ảnh bảo vật</label><input id="newRelicFile" type="file" accept="image/*"><p class="sub">Ảnh sẽ được tải lên Firebase Storage và đường dẫn được lưu trong kho dữ liệu chung.</p></div></div>
+      <div class="form-grid"><div><label>Tên bảo vật *</label><input id="newRelicName" placeholder="Tên bảo vật"></div><div><label>Chỉ số / mô tả</label><input id="newRelicDesc" placeholder="Ví dụ: Tăng tốc độ..."></div><div class="field-full"><label>Đường dẫn ảnh trên GitHub Pages (không bắt buộc)</label><input id="newRelicUrl" placeholder="images/treasures/item.png hoặc URL đầy đủ"><p class="sub">Đưa ảnh vào thư mục images/treasures trong kho GitHub, rồi nhập đường dẫn ảnh tại đây.</p></div></div>
       <div class="toolbar"><button class="primary" onclick="addRelic()">Lưu bảo vật</button><button onclick="toggleRelicForm(false)">Hủy</button></div>
     </div>
     <div class="filter-row relic-filter-row"><div><label class="filter-label" for="relicSearch">Tìm bảo vật</label><input id="relicSearch" placeholder="Tên hoặc mô tả bảo vật..." oninput="renderRelicCatalog()"></div><div><label class="filter-label" for="relicCategoryFilter">Lọc cấp bậc</label><select id="relicCategoryFilter" onchange="renderRelicCatalog()"><option value="all">Tất cả cấp bậc</option><option value="Trắng">⚪ Trắng</option><option value="Xanh lá">🟢 Xanh lá</option><option value="Xanh dương">🔵 Xanh dương</option><option value="Tím">🟣 Tím</option><option value="Vàng">🟡 Vàng</option><option value="Đỏ">🔴 Đỏ</option></select></div></div>
@@ -159,7 +158,7 @@ header{display:flex;align-items:center;justify-content:space-between;gap:15px;fl
       <div><label for="editPokemonTier">Bậc Pokémon</label><select id="editPokemonTier"><option>B</option><option>A</option><option>S</option><option>S+</option><option>SS</option></select></div>
       <div><label for="editPokemonVariant">Danh mục</label><select id="editPokemonVariant"><option value="standard">Pokémon thường</option><option value="Mega">Mega Pokémon</option><option value="Shiny">Shiny Pokémon</option></select></div>
       <div class="field-full"><label for="editPokemonImage">Đường dẫn ảnh (không bắt buộc)</label><input id="editPokemonImage" placeholder="Để trống để giữ ảnh hiện tại"></div>
-      <div class="field-full"><label for="editPokemonFile">Hoặc chọn ảnh từ thiết bị (không bắt buộc)</label><input id="editPokemonFile" type="file" accept="image/*"></div>
+      <div class="field-full"><p class="sub">Ảnh được lưu trong kho GitHub. Hãy tải ảnh lên GitHub trước rồi nhập đường dẫn ở ô trên.</p></div>
     </div>
     <div class="edit-modal-actions"><button onclick="closePokemonEditor()">Hủy</button><button class="primary" onclick="savePokemonEditor()">💾 Lưu thay đổi</button></div>
   </div>
@@ -176,7 +175,7 @@ header{display:flex;align-items:center;justify-content:space-between;gap:15px;fl
       <div><label for="editRelicCategory">Nhóm bảo vật</label><select id="editRelicCategory"><option value="attack">Tấn công</option><option value="defense">Phòng thủ</option><option value="speed">Tốc độ</option><option value="support">Hỗ trợ</option><option value="game">Biểu tượng từ ảnh game</option><option value="custom">Khác / tự thêm</option></select></div>
       <div><label for="editRelicRarity">Cấp bậc bảo vật</label><select id="editRelicRarity"><option value="">Chưa xác định</option><option value="Trắng">⚪ Trắng</option><option value="Xanh lá">🟢 Xanh lá</option><option value="Xanh dương">🔵 Xanh dương</option><option value="Tím">🟣 Tím</option><option value="Vàng">🟡 Vàng</option><option value="Đỏ">🔴 Đỏ</option></select></div>
       <div class="field-full"><label for="editRelicImage">Đường dẫn ảnh</label><input id="editRelicImage" placeholder="Để trống nếu muốn giữ ảnh hiện tại"></div>
-      <div class="field-full"><label for="editRelicFile">Hoặc tải ảnh mới từ thiết bị</label><input id="editRelicFile" type="file" accept="image/*"><small class="sub">Ảnh tải lên sẽ thay thế ảnh cũ. Tối đa 2.5 MB.</small></div>
+      <div class="field-full"><small class="sub">Ảnh mới cần được tải lên GitHub trước; sau đó nhập đường dẫn ở ô trên.</small></div>
       <div class="field-full"><label for="editRelicNotes">Ghi chú nội bộ</label><textarea id="editRelicNotes" rows="2" placeholder="Ghi chú thêm (không bắt buộc)"></textarea></div>
     </div>
     <div class="edit-modal-actions"><button onclick="closeRelicEditor()">Hủy</button><button class="primary" onclick="saveRelicEditor()">💾 Lưu thay đổi</button></div>
@@ -187,7 +186,6 @@ header{display:flex;align-items:center;justify-content:space-between;gap:15px;fl
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 <script>
 // Cấu hình ứng dụng web Firebase của dự án Mika Team Builder.
 const firebaseConfig = {
@@ -199,8 +197,8 @@ const firebaseConfig = {
   appId: "1:402013446810:web:4bde41ef2607996b423523",
   measurementId: "G-TCMZ58F003"
 };
-let firebaseApp, firebaseAuth, firebaseDb, firebaseStorage;
-try { firebaseApp = firebase.initializeApp(firebaseConfig); firebaseAuth = firebase.auth(); firebaseDb = firebase.firestore(); firebaseStorage = firebase.storage(); }
+let firebaseApp, firebaseAuth, firebaseDb;
+try { firebaseApp = firebase.initializeApp(firebaseConfig); firebaseAuth = firebase.auth(); firebaseDb = firebase.firestore(); }
 catch (e) { console.error('Không khởi tạo được Firebase:', e); }
 </script>
 <script>
@@ -535,7 +533,6 @@ function editPokemon(id){
   const v=String(p.variant||'').toLowerCase();
   document.getElementById('editPokemonVariant').value=v==='mega'?'Mega':v==='shiny'?'Shiny':'standard';
   document.getElementById('editPokemonImage').value='';
-  document.getElementById('editPokemonFile').value='';
   document.getElementById('pokemonEditModal').classList.add('open');
   setTimeout(()=>document.getElementById('editPokemonName').focus(),50);
 }
@@ -551,8 +548,8 @@ async function savePokemonEditor(){
   if(!TIERS.includes(tier)){toast('Bậc Pokémon không hợp lệ.');return}
   if(!['standard','Mega','Shiny'].includes(choice)){toast('Danh mục Pokémon không hợp lệ.');return}
   try{
-    const file=document.getElementById('editPokemonFile').files[0];const url=document.getElementById('editPokemonImage').value.trim();
-    const image=file?await uploadCatalogImage(file,'pokemon',id):(url||p.image||'');
+    const url=document.getElementById('editPokemonImage').value.trim();
+    const image=url||p.image||'';
     const updated={...p,name,type,tier,variant:choice==='standard'?'':choice, image,shared:true,editedByAdmin:true};
     const shared=getSharedCatalog();const idx=shared.pokemon.findIndex(x=>x.id===id);
     if(idx>=0)shared.pokemon[idx]={...shared.pokemon[idx],...updated};else shared.pokemon.push(updated);
@@ -576,17 +573,12 @@ function renderAll(){renderTeam();renderStats();renderPokemonCatalog();renderRel
 function showCustomForm(){if(!isAdmin()){toast('Chỉ quản trị viên mới được thêm Pokémon.');return}document.getElementById('customPokeForm').classList.remove('hidden')}
 function hideCustomForm(){document.getElementById('customPokeForm').classList.add('hidden')}
 async function fileToData(file){if(!file)return '';if(!file.type.startsWith('image/'))throw new Error('Vui lòng chọn tệp ảnh.');if(file.size>2.5*1024*1024)throw new Error('Ảnh quá lớn (tối đa 2.5 MB). Hãy nén ảnh rồi thử lại.');return await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file)})}
-// Tải ảnh lên Firebase Storage để mọi tài khoản có thể xem được, thay vì chỉ lưu trong trình duyệt.
-async function uploadCatalogImage(file,kind,id){
- if(!file)return '';
- if(!isAdmin())throw new Error('Chỉ ADMIN mới được tải ảnh lên.');
- if(!file.type||!file.type.startsWith('image/'))throw new Error('Vui lòng chọn tệp ảnh.');
- if(file.size>5*1024*1024)throw new Error('Ảnh quá lớn (tối đa 5 MB). Hãy nén ảnh rồi thử lại.');
- if(!firebaseStorage||!firebaseAuth||!firebaseAuth.currentUser)throw new Error('Firebase Storage chưa sẵn sàng.');
- const cleanName=String(file.name||'image').replace(/[^a-zA-Z0-9._-]/g,'_');
- const path='catalogImages/'+firebaseAuth.currentUser.uid+'/'+kind+'/'+id+'_'+Date.now()+'_'+cleanName;
- const snap=await firebaseStorage.ref().child(path).put(file,{contentType:file.type});
- return await snap.ref.getDownloadURL();
+// Phương án miễn phí: ảnh được lưu trong kho GitHub; Firestore chỉ lưu URL/đường dẫn ảnh.
+function githubImagePath(path){
+ const value=String(path||'').trim();
+ if(!value)return '';
+ if(/^https?:\/\//i.test(value)||value.startsWith('data:image/'))return value;
+ return value.replace(/^\.\//,'').replace(/^\//,'');
 }
 async function saveCatalogItemCloud(kind,item){
  if(!firebaseDb||!firebaseAuth||!firebaseAuth.currentUser)throw new Error('Bạn cần đăng nhập để lưu kho dữ liệu.');
@@ -610,7 +602,7 @@ async function loadCloudCatalog(){
  const stateR=new Map((state.relics||[]).map(x=>[x.id,x]));cloudRelics.forEach(x=>stateR.set(x.id,x));state.relics=[...stateR.values()];
  }
 
-async function addCustomPokemon(){if(!isAdmin()){toast('Bạn không có quyền thêm Pokémon.');return}const name=document.getElementById('newPokeName').value.trim();if(!name){toast('Hãy nhập tên Pokémon.');return}try{const file=document.getElementById('newPokeFile').files[0];const url=document.getElementById('newPokeUrl').value.trim();const id='custom_'+Date.now();const image=file?await uploadCatalogImage(file,'pokemon',id):url;const choice=document.getElementById('newPokeVariant').value;const tier=document.getElementById('newPokeTier').value;const item={id,name,type:document.getElementById('newPokeType').value.trim()||'Unknown',tier:TIERS.includes(tier)?tier:'B',image,custom:true,shared:true,variant:choice==='standard'?'':choice};state.pokemon.push(item);const shared=getSharedCatalog();shared.pokemon=shared.pokemon.filter(x=>x.id!==id);shared.pokemon.push(item);saveSharedCatalog(shared);await saveCatalogItemCloud('pokemon',item);saveState();hideCustomForm();['newPokeName','newPokeType','newPokeUrl','newPokeFile'].forEach(x=>document.getElementById(x).value='');document.getElementById('newPokeVariant').value='standard';document.getElementById('newPokeTier').value='B';renderAll();document.getElementById('pokeCategoryFilter').value=choice==='Mega'?'mega':choice==='Shiny'?'shiny':'all';renderPokemonCatalog();toast('Đã thêm '+name+' vào danh mục '+(choice==='Mega'?'Mega Pokémon':choice==='Shiny'?'Shiny Pokémon':'Pokémon thường')+'.')}catch(e){toast(e.message||'Không đọc được ảnh')}}
+async function addCustomPokemon(){if(!isAdmin()){toast('Bạn không có quyền thêm Pokémon.');return}const name=document.getElementById('newPokeName').value.trim();if(!name){toast('Hãy nhập tên Pokémon.');return}try{const url=document.getElementById('newPokeUrl').value.trim();const id='custom_'+Date.now();const image=githubImagePath(url);const choice=document.getElementById('newPokeVariant').value;const tier=document.getElementById('newPokeTier').value;const item={id,name,type:document.getElementById('newPokeType').value.trim()||'Unknown',tier:TIERS.includes(tier)?tier:'B',image,custom:true,shared:true,variant:choice==='standard'?'':choice};state.pokemon.push(item);const shared=getSharedCatalog();shared.pokemon=shared.pokemon.filter(x=>x.id!==id);shared.pokemon.push(item);saveSharedCatalog(shared);await saveCatalogItemCloud('pokemon',item);saveState();hideCustomForm();['newPokeName','newPokeType','newPokeUrl'].forEach(x=>document.getElementById(x).value='');document.getElementById('newPokeVariant').value='standard';document.getElementById('newPokeTier').value='B';renderAll();document.getElementById('pokeCategoryFilter').value=choice==='Mega'?'mega':choice==='Shiny'?'shiny':'all';renderPokemonCatalog();toast('Đã thêm '+name+' vào danh mục '+(choice==='Mega'?'Mega Pokémon':choice==='Shiny'?'Shiny Pokémon':'Pokémon thường')+'.')}catch(e){toast(e.message||'Không thể lưu Pokémon')}}
 function duplicatePokemon(id){
  if(!isAdmin()){toast('Chỉ ADMIN mới được sao chép Pokémon.');return}
  const source=getPokemon(id);if(!source){toast('Không tìm thấy Pokémon cần sao chép.');return}
@@ -649,7 +641,7 @@ function changeMemberSlots(v){const m=state.team[state.selectedMember];if(!m)ret
 function setMemberRelic(slot,id){const m=state.team[state.selectedMember];if(!m)return;m.relics[slot]=id;saveState();renderRelics();toast(id?'Đã gắn bảo vật.':'Đã tháo bảo vật.')}
 function clearMemberRelics(){const m=state.team[state.selectedMember];if(!m)return;m.relics=Array(Number(m.relicSlots||3)).fill('');saveState();renderRelics();toast('Đã tháo toàn bộ bảo vật.')}
 function toggleRelicForm(force){const f=document.getElementById('relicForm');if(force===false)f.classList.add('hidden');else f.classList.toggle('hidden')}
-async function addRelic(){if(!isAdmin()){toast('Bạn không có quyền thêm bảo vật.');return}const name=document.getElementById('newRelicName').value.trim();if(!name){toast('Hãy nhập tên bảo vật.');return}try{const file=document.getElementById('newRelicFile').files[0];const url=document.getElementById('newRelicUrl').value.trim();const id='relic_'+Date.now();const image=file?await uploadCatalogImage(file,'relics',id):url;const item={id,name,description:document.getElementById('newRelicDesc').value.trim(),image,shared:true};state.relics.push(item);const shared=getSharedCatalog();shared.relics=shared.relics.filter(x=>x.id!==item.id);shared.relics.push(item);saveSharedCatalog(shared);await saveCatalogItemCloud('relics',item);saveState();['newRelicName','newRelicDesc','newRelicUrl','newRelicFile'].forEach(x=>document.getElementById(x).value='');toggleRelicForm(false);renderRelics();toast('Đã thêm bảo vật '+name)}catch(e){toast(e.message||'Không đọc được ảnh')}}
+async function addRelic(){if(!isAdmin()){toast('Bạn không có quyền thêm bảo vật.');return}const name=document.getElementById('newRelicName').value.trim();if(!name){toast('Hãy nhập tên bảo vật.');return}try{const url=document.getElementById('newRelicUrl').value.trim();const id='relic_'+Date.now();const image=githubImagePath(url);const item={id,name,description:document.getElementById('newRelicDesc').value.trim(),image,shared:true};state.relics.push(item);const shared=getSharedCatalog();shared.relics=shared.relics.filter(x=>x.id!==item.id);shared.relics.push(item);saveSharedCatalog(shared);await saveCatalogItemCloud('relics',item);saveState();['newRelicName','newRelicDesc','newRelicUrl'].forEach(x=>document.getElementById(x).value='');toggleRelicForm(false);renderRelics();toast('Đã thêm bảo vật '+name)}catch(e){toast(e.message||'Không thể lưu bảo vật')}}
 function editRelic(id){
  if(!isAdmin()){toast('Chỉ ADMIN mới được chỉnh sửa bảo vật.');return}
  const item=state.relics.find(r=>r.id===id);if(!item){toast('Không tìm thấy bảo vật.');return}
@@ -660,7 +652,6 @@ function editRelic(id){
  document.getElementById('editRelicCategory').value=['attack','defense','speed','support','game'].includes(item.category)?item.category:'custom';
  document.getElementById('editRelicRarity').value=item.rarity||'';
  document.getElementById('editRelicImage').value='';
- document.getElementById('editRelicFile').value='';
  document.getElementById('editRelicNotes').value=item.notes||'';
  document.getElementById('relicEditModal').classList.add('open');
 }
@@ -670,8 +661,8 @@ async function saveRelicEditor(){
  const id=document.getElementById('editRelicId').value;const item=state.relics.find(r=>r.id===id);if(!item){toast('Không tìm thấy bảo vật.');return}
  const name=document.getElementById('editRelicName').value.trim();if(!name){toast('Tên bảo vật không được để trống.');return}
  try{
-  const file=document.getElementById('editRelicFile').files[0];const url=document.getElementById('editRelicImage').value.trim();
-  const image=file?await uploadCatalogImage(file,'relics',id):(url||item.image||'');
+  const url=document.getElementById('editRelicImage').value.trim();
+  const image=url||item.image||'';
   const updated={...item,name,description:document.getElementById('editRelicDesc').value.trim(),effect:document.getElementById('editRelicEffect').value.trim(),category:document.getElementById('editRelicCategory').value,rarity:document.getElementById('editRelicRarity').value,notes:document.getElementById('editRelicNotes').value.trim(),image,shared:true};
   state.relics=state.relics.map(r=>r.id===id?updated:r);
   const shared=getSharedCatalog();shared.relics=shared.relics.map(r=>r.id===id?updated:r);if(!shared.relics.some(r=>r.id===id))shared.relics.push(updated);
