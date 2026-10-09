@@ -8,6 +8,6 @@ on:
 jobs:
   sync-blocked-users:
     runs-on: ubuntu-latest
-      steps:
-        - name: Prepare
-          run: echo "Workflow trigger configured."
+    steps:
+      - name: Prepare
+        run: echo "Workflow trigger configured."
