@@ -1,0 +1,13 @@
+name: Sync blocked Firebase users
+
+on:
+  workflow_dispatch:
+  repository_dispatch:
+    types: [blocked-email-changed]
+
+jobs:
+  sync-blocked-users:
+    runs-on: ubuntu-latest
+      steps:
+        - name: Prepare
+          run: echo "Workflow trigger configured."
