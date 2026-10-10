@@ -2,12 +2,30 @@ name: Sync blocked Firebase users
 
 on:
   workflow_dispatch:
-  repository_dispatch:
-    types: [blocked-email-changed]
+  schedule:
+    - cron: "*/5 * * * *"
+
+permissions:
+  contents: read
 
 jobs:
   sync-blocked-users:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Prepare
-        run: echo "Workflow trigger configured."
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install Firebase Admin SDK
+        run: npm install --no-save firebase-admin
+
+      - name: Sync blocked users
+        run: node scripts/sync-blocked-users.js
+        env:
+          FIREBASE_PROJECT_ID: mika-team-builder
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
