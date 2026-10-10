@@ -79,11 +79,18 @@ async function syncBlockedUsers() {
   }
 
   console.log(
-    `Sync complete. Disabled: ${disabledCount}; enabled: ${enabledCount}.`
-  );
-}
-
-syncBlockedUsers().catch((error) => {
-  console.error("Firebase user sync failed:", error);
-  process.exitCode = 1;
-});
+  `Sync complete. Auth users: ${users.length}; blocked emails: ${blockedEmails.size}; Disabled: ${disabledCount}; enabled: ${enabledCount}.`
+);
+console.log(
+  "Blocked emails:",
+  [...blockedEmails].join(", ")
+);
+console.log(
+  "Matching Auth users:",
+  users
+    .filter(user =>
+      blockedEmails.has((user.email || "").trim().toLowerCase())
+    )
+    .map(user => `${user.email} (disabled=${user.disabled})`)
+    .join(", ") || "NONE"
+);
