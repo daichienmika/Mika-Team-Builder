@@ -1,4 +1,6 @@
-const admin = require("firebase-admin");
+const { initializeApp, cert, getApp } = require("firebase-admin/app");
+const { getAuth } = require("firebase-admin/auth");
+const { getFirestore, FieldValue } = require("firebase-admin/firestore");
 
 const projectId = process.env.FIREBASE_PROJECT_ID;
 const serviceAccountText = process.env.FIREBASE_SERVICE_ACCOUNT;
@@ -9,13 +11,13 @@ if (!projectId || !serviceAccountText) {
 
 const serviceAccount = JSON.parse(serviceAccountText);
 
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
+initializeApp({
+  credential: cert(serviceAccount),
   projectId,
 });
 
-const db = admin.firestore();
-const auth = admin.auth();
+const db = getFirestore();
+const auth = getAuth();
 
 async function getAllUsers() {
   const users = [];
