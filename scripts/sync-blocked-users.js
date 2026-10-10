@@ -1,4 +1,3 @@
-```javascript
 const admin = require("firebase-admin");
 
 const projectId = process.env.FIREBASE_PROJECT_ID;
@@ -86,4 +85,3 @@ syncBlockedUsers().catch((error) => {
   console.error("Firebase user sync failed:", error);
   process.exitCode = 1;
 });
-```
