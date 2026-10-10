@@ -1,4 +1,4 @@
-const { initializeApp, cert, getApp } = require("firebase-admin/app");
+const { initializeApp, cert } = require("firebase-admin/app");
 const { getAuth } = require("firebase-admin/auth");
 const { getFirestore, FieldValue } = require("firebase-admin/firestore");
 
@@ -53,10 +53,10 @@ async function syncBlockedUsers() {
     const email = (user.email || "").trim().toLowerCase();
     const marker = db.collection("authAutomationDisabled").doc(user.uid);
 
-    if (blockedEmails.has(email) && !user.disabled) {
+    if (email && blockedEmails.has(email) && !user.disabled) {
       await marker.set({
         email,
-        markedAt: admin.firestore.FieldValue.serverTimestamp(),
+        markedAt: FieldValue.serverTimestamp(),
       });
 
       try {
@@ -67,7 +67,11 @@ async function syncBlockedUsers() {
         await marker.delete();
         throw error;
       }
-    } else if (!blockedEmails.has(email) && managedUids.has(user.uid)) {
+    } else if (
+      email &&
+      !blockedEmails.has(email) &&
+      managedUids.has(user.uid)
+    ) {
       if (user.disabled) {
         await auth.updateUser(user.uid, { disabled: false });
       }
@@ -79,18 +83,23 @@ async function syncBlockedUsers() {
   }
 
   console.log(
-  `Sync complete. Auth users: ${users.length}; blocked emails: ${blockedEmails.size}; Disabled: ${disabledCount}; enabled: ${enabledCount}.`
-);
-console.log(
-  "Blocked emails:",
-  [...blockedEmails].join(", ")
-);
-console.log(
-  "Matching Auth users:",
-  users
-    .filter(user =>
-      blockedEmails.has((user.email || "").trim().toLowerCase())
-    )
-    .map(user => `${user.email} (disabled=${user.disabled})`)
-    .join(", ") || "NONE"
-);
+    `Sync complete. Auth users: ${users.length}; blocked emails: ${blockedEmails.size}; Disabled: ${disabledCount}; enabled: ${enabledCount}.`
+  );
+
+  console.log("Blocked emails:", [...blockedEmails].join(", "));
+
+  console.log(
+    "Matching Auth users:",
+    users
+      .filter((user) =>
+        blockedEmails.has((user.email || "").trim().toLowerCase())
+      )
+      .map((user) => `${user.email} (disabled=${user.disabled})`)
+      .join(", ") || "NONE"
+  );
+}
+
+syncBlockedUsers().catch((error) => {
+  console.error("Firebase user sync failed:", error);
+  process.exitCode = 1;
+});
