@@ -44,6 +44,15 @@ header{display:flex;align-items:center;justify-content:space-between;gap:15px;fl
 
 .community-card{background:linear-gradient(145deg,#171d38,#101426);border:1px solid #39466e;border-radius:15px;padding:14px;min-width:0}.community-card h3{margin:0 0 7px}.community-meta{font-size:.78rem;color:var(--muted);margin:5px 0 10px}.community-card .featured-comments{margin-top:12px}.community-card .featured-pokemon-item{min-width:0}
 .comment-votes{display:flex;gap:7px;flex-wrap:wrap;margin-top:7px}.comment-vote{font-size:.76rem;padding:4px 8px;background:#151b30;border:1px solid #394362;border-radius:8px;color:#cbd5ef;cursor:pointer}.comment-vote.chosen{border-color:#38bdf8;color:#9cecff;background:#123044}.comment-vote.chosen.dislike{border-color:#fb7185;color:#fecdd3;background:#3a1825}.comment-vote:disabled{opacity:.55;cursor:not-allowed}
+
+/* Ảnh Pokémon thu nhỏ trong danh sách đội hình đã lưu */
+.saved-mini-team{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:5px;margin:10px 0 12px;max-width:100%}
+.saved-mini{min-width:0;height:54px;border:1px solid var(--border,#303a5c);border-radius:9px;background:rgba(255,255,255,.035);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.saved-mini img{width:100%;height:100%;object-fit:contain;padding:3px}
+.saved-mini-name{position:absolute;left:2px;right:2px;bottom:1px;font-size:8px;line-height:1.1;text-align:center;color:#e9edff;text-shadow:0 1px 3px #000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.9}
+.saved-mini.empty-mini{color:#8490b5;font-size:20px}
+.saved-mini.mini-image-missing:after{content:'?';color:#8490b5;font-size:20px}
+@media(max-width:520px){.saved-mini{height:46px}.saved-mini-team{gap:3px}.saved-mini-name{font-size:7px}}
 </style>
 </head>
 <body>
@@ -803,7 +812,22 @@ function saveCurrentTeam(){const name=(document.getElementById('teamName').value
 function createNewTeam(){const hasMembers=Array.isArray(state.team)&&state.team.some(Boolean);if(hasMembers&&confirm('Đội hình hiện tại có Pokémon. Bạn có muốn lưu đội hình này trước khi tạo đội hình mới không?'))saveCurrentTeam();let n=1,name='Đội hình mới';const names=new Set((state.savedTeams||[]).map(t=>String(t.name||'')));while(names.has(name)){n++;name='Đội hình mới '+n;}state.teamName=name;state.team=Array(6).fill(null);state.selectedMember=0;saveState();renderAll();openTab('team');toast('Đã tạo '+name+'. Đội hình đã lưu vẫn được giữ nguyên.')}
 function loadSavedTeam(i){const s=state.savedTeams[i];if(!s)return;state.team=JSON.parse(JSON.stringify(s.team));while(state.team.length<6)state.team.push(null);state.team=state.team.slice(0,6);state.teamName=s.name;saveState();renderAll();openTab('team');toast('Đã mở đội hình '+s.name)}
 function deleteSavedTeam(i){if(!confirm('Xóa đội hình đã lưu này?'))return;state.savedTeams.splice(i,1);saveState();renderSaved()}
-function renderSaved(){const el=document.getElementById('savedList');if(!state.savedTeams.length){el.innerHTML='<div class="empty">Chưa có đội hình nào được lưu.</div>';return}el.innerHTML=state.savedTeams.map((s,i)=>`<div class="saved-card"><h3>${escapeHTML(s.name)}</h3><p>${s.team.filter(Boolean).length}/6 Pokémon</p><div class="toolbar"><button class="primary small" onclick="loadSavedTeam(${i})">Mở đội hình</button><button class="small danger" onclick="deleteSavedTeam(${i})">Xóa</button></div></div>`).join('')}
+function renderSaved(){
+ const el=document.getElementById('savedList');
+ if(!state.savedTeams.length){el.innerHTML='<div class="empty">Chưa có đội hình nào được lưu.</div>';return}
+ el.innerHTML=state.savedTeams.map((s,i)=>{
+   const team=Array.isArray(s.team)?s.team.slice(0,6):[];
+   const minis=Array.from({length:6},(_,slotIndex)=>{
+     const member=team[slotIndex];
+     if(!member) return `<div class="saved-mini empty-mini" title="Vị trí ${slotIndex+1} trống"><span>＋</span></div>`;
+     const p=getPokemon(member.pokemonId)||{name:member.pokemonName||'Pokémon',image:member.image||'',type:member.type||''};
+     const img=p.image||member.image||'';
+     const name=p.name||member.pokemonName||'Pokémon';
+     return `<div class="saved-mini" title="${escapeHTML(name)}"><img src="${safeImg(img)}" alt="${escapeHTML(name)}" loading="lazy" onerror="this.onerror=null;this.style.display='none';this.parentElement.classList.add('mini-image-missing')"><span class="saved-mini-name">${escapeHTML(name)}</span></div>`;
+   }).join('');
+   return `<div class="saved-card"><h3>${escapeHTML(s.name)}</h3><p>${team.filter(Boolean).length}/6 Pokémon</p><div class="saved-mini-team" aria-label="Pokémon trong đội hình">${minis}</div><div class="toolbar"><button class="primary small" onclick="loadSavedTeam(${i})">Mở đội hình</button><button class="small danger" onclick="deleteSavedTeam(${i})">Xóa</button></div></div>`;
+ }).join('');
+}
 function exportData(){const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='mika-team-builder-backup.json';a.click();URL.revokeObjectURL(a.href);toast('Đã xuất dữ liệu sao lưu.')}
 function importData(event){const file=event.target.files[0];if(!file)return;const r=new FileReader();r.onload=()=>{try{const data=JSON.parse(r.result);if(!data||!Array.isArray(data.team)||!Array.isArray(data.pokemon)||!Array.isArray(data.relics))throw new Error();if(!confirm('Nhập dữ liệu sẽ thay thế cấu hình hiện tại. Tiếp tục?'))return;state={...state,...data};while(state.team.length<6)state.team.push(null);state.team=state.team.slice(0,6);saveState();renderAll();toast('Đã nhập dữ liệu thành công.')}catch(e){toast('Tệp sao lưu không hợp lệ.')}finally{event.target.value=''}};r.readAsText(file)}
 if(firebaseAuth){firebaseAuth.onAuthStateChanged(async user=>{if(user){await enterAccount(user)}else{currentIsAdmin=false;currentIsModerator=false;currentAccount='';currentDisplayName='';document.querySelector('.wrap').classList.remove('authed');document.getElementById('authScreen').style.display='grid';setAuthMode('login')}})}else{document.getElementById('authScreen').style.display='grid';setAuthMode('login')}
