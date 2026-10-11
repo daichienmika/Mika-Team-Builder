@@ -663,50 +663,7 @@ function resolveTeamPokemon(member){
 }
 function allPokemon(){const deleted=new Set(getSharedCatalog().deletedPokemonIds||[]);const combined=[...state.pokemon,...pokedex.filter(p=>!state.pokemon.some(c=>c.id===p.id))];return combined.map(p=>p.id==='form_terapagos_terastal'?{...p,name:'Terapagos (Terastal Form)',dex:1024,type:'Normal',tier:'S+',variant:'Terastal',image:'https://archives.bulbagarden.net/media/upload/thumb/e/ed/1024Terapagos-Terastal.png/600px-1024Terapagos-Terastal.png'}:p).filter(p=>!deleted.has(p.id)&&(p.isShinyMega||(String(p.variant||'').toLowerCase()!=='shiny'&&!String(p.id||'').toLowerCase().includes('shiny')&&!String(p.name||'').toLowerCase().startsWith('shiny '))))}
 const TYPE_LABELS={normal:'Thường',fire:'Lửa',water:'Nước',electric:'Điện',grass:'Cỏ',ice:'Băng',fighting:'Giác đấu',poison:'Độc',ground:'Đất',flying:'Bay',psychic:'Tâm linh',bug:'Côn trùng',rock:'Đá',ghost:'Ma',dragon:'Rồng',dark:'Bóng tối',steel:'Thép',fairy:'Tiên'};
-function pokemonTypes(p){
- if(!p)return [];
- const aliases={
-  'normal':'normal','thường':'normal',
-  'fire':'fire','lửa':'fire',
-  'water':'water','nước':'water',
-  'electric':'electric','điện':'electric',
-  'grass':'grass','cỏ':'grass',
-  'ice':'ice','băng':'ice',
-  'fighting':'fighting','giác đấu':'fighting',
-  'poison':'poison','độc':'poison',
-  'ground':'ground','đất':'ground',
-  'flying':'flying','bay':'flying',
-  'psychic':'psychic','tâm linh':'psychic',
-  'bug':'bug','côn trùng':'bug',
-  'rock':'rock','đá':'rock',
-  'ghost':'ghost','ma':'ghost',
-  'dragon':'dragon','rồng':'dragon',
-  'dark':'dark','bóng tối':'dark',
-  'steel':'steel','thép':'steel',
-  'fairy':'fairy','tiên':'fairy'
- };
- const values=[];
- const collect=v=>{
-  if(Array.isArray(v)){v.forEach(collect);return;}
-  if(v&&typeof v==='object'){
-   if(v.name!=null)collect(v.name);
-   else if(v.type!=null)collect(v.type);
-   return;
-  }
-  if(v==null)return;
-  String(v).toLowerCase().split(/[\/|,+;&]+/).forEach(part=>{
-   const token=part.trim().replace(/^type\s*:\s*/,'');
-   if(token)values.push(token);
-  });
- };
- collect(p.type);collect(p.types);collect(p.type1);collect(p.type2);collect(p.primaryType);collect(p.secondaryType);
- const out=[];
- values.forEach(token=>{
-  const key=aliases[token];
-  if(key&&!out.includes(key))out.push(key);
- });
- return out;
-}
+function pokemonTypes(p){const raw=String(p?.type||'');const out=[];Object.entries(TYPE_LABELS).forEach(([en,vi])=>{if(new RegExp('\\b'+en+'\\b','i').test(raw)||raw.toLowerCase().includes(vi.toLowerCase()))out.push(en)});return [...new Set(out)]}
 const TYPE_ICONS={normal:'⚪',fire:'🔥',water:'💧',electric:'⚡',grass:'🌿',ice:'❄️',fighting:'🥊',poison:'☠️',ground:'🌍',flying:'🪽',psychic:'🔮',bug:'🐛',rock:'🪨',ghost:'👻',dragon:'🐉',dark:'🌑',steel:'⚙️',fairy:'✨'};
 const TIERS=['B','A','S','S+','SS'];
 function typeBadges(p){const ts=pokemonTypes(p);return ts.length?ts.map(t=>`<span class="type-icon">${TYPE_ICONS[t]||'🔹'} ${TYPE_LABELS[t]}</span>`).join(' '):'<span class="type-icon">❔ Chưa rõ hệ</span>'}
@@ -776,10 +733,7 @@ function renderStats(){
  document.getElementById('statRelics').textContent=members.reduce((n,m)=>n+(m.relics||[]).filter(Boolean).length,0);
  document.getElementById('statCustom').textContent=members.filter(m=>state.pokemon.some(p=>p.id===(m.pokemonId||m.id))).length;
  const counts={};
- members.forEach(m=>{
-   const p=getPokemon(m.pokemonId)||((m.pokemonName||m.image)?{id:m.pokemonId,name:m.pokemonName||'Pokémon',image:m.image||'',type:m.type||'Unknown',types:m.types,type1:m.type1,type2:m.type2,dex:m.dex||'Pokémon'}:resolveTeamPokemon(m));
-   pokemonTypes(p).forEach(t=>counts[t]=(counts[t]||0)+1);
- });
+ members.forEach(m=>{const p=resolveTeamPokemon(m);pokemonTypes(p).forEach(t=>counts[t]=(counts[t]||0)+1)});
  const typeEl=document.getElementById('activeTypeSummary');
  if(typeEl)typeEl.innerHTML=Object.keys(counts).length?Object.entries(counts).map(([t,n])=>`<span class="badge type-badge">${TYPE_LABELS[t]||t} × ${n}</span>`).join(' '):'Chưa có dữ liệu hệ cho Pokémon đang chọn.';
  const summary=document.getElementById('teamSummary');
