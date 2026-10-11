@@ -665,7 +665,7 @@ function allPokemon(){const deleted=new Set(getSharedCatalog().deletedPokemonIds
 const TYPE_LABELS={normal:'Thường',fire:'Lửa',water:'Nước',electric:'Điện',grass:'Cỏ',ice:'Băng',fighting:'Giác đấu',poison:'Độc',ground:'Đất',flying:'Bay',psychic:'Tâm linh',bug:'Côn trùng',rock:'Đá',ghost:'Ma',dragon:'Rồng',dark:'Bóng tối',steel:'Thép',fairy:'Tiên'};
 function pokemonTypes(p){
  if(!p)return [];
- const labels={
+ const aliases={
   'normal':'normal','thường':'normal',
   'fire':'fire','lửa':'fire',
   'water':'water','nước':'water',
@@ -685,17 +685,25 @@ function pokemonTypes(p){
   'steel':'steel','thép':'steel',
   'fairy':'fairy','tiên':'fairy'
  };
- const candidates=[];
- const add=v=>{
-  if(Array.isArray(v))v.forEach(add);
-  else if(v&&typeof v==='object'){if(v.name)add(v.name);else if(v.type)add(v.type)}
-  else if(v!=null)candidates.push(String(v));
+ const values=[];
+ const collect=v=>{
+  if(Array.isArray(v)){v.forEach(collect);return;}
+  if(v&&typeof v==='object'){
+   if(v.name!=null)collect(v.name);
+   else if(v.type!=null)collect(v.type);
+   return;
+  }
+  if(v==null)return;
+  String(v).toLowerCase().split(/[\/|,+;&]+/).forEach(part=>{
+   const token=part.trim().replace(/^type\s*:\s*/,'');
+   if(token)values.push(token);
+  });
  };
- add(p.type);add(p.types);add(p.type1);add(p.type2);add(p.primaryType);add(p.secondaryType);
- const raw=candidates.join(' ').toLowerCase();
+ collect(p.type);collect(p.types);collect(p.type1);collect(p.type2);collect(p.primaryType);collect(p.secondaryType);
  const out=[];
- Object.entries(labels).forEach(([label,key])=>{
-  if(raw.includes(label.toLowerCase())&&!out.includes(key))out.push(key);
+ values.forEach(token=>{
+  const key=aliases[token];
+  if(key&&!out.includes(key))out.push(key);
  });
  return out;
 }
@@ -768,7 +776,10 @@ function renderStats(){
  document.getElementById('statRelics').textContent=members.reduce((n,m)=>n+(m.relics||[]).filter(Boolean).length,0);
  document.getElementById('statCustom').textContent=members.filter(m=>state.pokemon.some(p=>p.id===(m.pokemonId||m.id))).length;
  const counts={};
- members.forEach(m=>{const p=resolveTeamPokemon(m);pokemonTypes(p).forEach(t=>counts[t]=(counts[t]||0)+1)});
+ members.forEach(m=>{
+   const p=getPokemon(m.pokemonId)||((m.pokemonName||m.image)?{id:m.pokemonId,name:m.pokemonName||'Pokémon',image:m.image||'',type:m.type||'Unknown',types:m.types,type1:m.type1,type2:m.type2,dex:m.dex||'Pokémon'}:resolveTeamPokemon(m));
+   pokemonTypes(p).forEach(t=>counts[t]=(counts[t]||0)+1);
+ });
  const typeEl=document.getElementById('activeTypeSummary');
  if(typeEl)typeEl.innerHTML=Object.keys(counts).length?Object.entries(counts).map(([t,n])=>`<span class="badge type-badge">${TYPE_LABELS[t]||t} × ${n}</span>`).join(' '):'Chưa có dữ liệu hệ cho Pokémon đang chọn.';
  const summary=document.getElementById('teamSummary');
