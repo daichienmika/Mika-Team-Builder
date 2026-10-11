@@ -677,12 +677,12 @@ function pokemonTypes(p){
   'poison':'poison','độc':'poison',
   'ground':'ground','đất':'ground',
   'flying':'flying','bay':'flying',
-  'psychic':'psychic','tâm linh':'psychic',
+  'psychic':'psychic','tâm linh':'psychic','tam linh':'psychic',
   'bug':'bug','côn trùng':'bug',
   'rock':'rock','đá':'rock',
   'ghost':'ghost','ma':'ghost',
   'dragon':'dragon','rồng':'dragon',
-  'dark':'dark','bóng tối':'dark',
+  'dark':'dark','bóng tối':'dark','bong toi':'dark',
   'steel':'steel','thép':'steel',
   'fairy':'fairy','tiên':'fairy'
  };
@@ -698,8 +698,10 @@ function pokemonTypes(p){
    return;
   }
   String(value).toLowerCase()
+   // Bỏ tiền tố phân loại dạng "Mega •" hoặc "Shiny •" để vẫn nhận diện được hệ.
+   .replace(/^(?:mega|shiny)\s*[•·:|-]\s*/i,'')
    .split(/[\/|,+;&]+/)
-   .map(part=>part.trim().replace(/^type\s*:\s*/,''))
+   .map(part=>part.trim().replace(/^(?:mega|shiny)\s*[•·:|-]\s*/i,'').replace(/^type\s*:\s*/,'').trim())
    .filter(Boolean)
    .forEach(part=>values.push(part));
  };
