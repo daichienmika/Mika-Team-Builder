@@ -663,7 +663,17 @@ function resolveTeamPokemon(member){
 }
 function allPokemon(){const deleted=new Set(getSharedCatalog().deletedPokemonIds||[]);const combined=[...state.pokemon,...pokedex.filter(p=>!state.pokemon.some(c=>c.id===p.id))];return combined.map(p=>p.id==='form_terapagos_terastal'?{...p,name:'Terapagos (Terastal Form)',dex:1024,type:'Normal',tier:'S+',variant:'Terastal',image:'https://archives.bulbagarden.net/media/upload/thumb/e/ed/1024Terapagos-Terastal.png/600px-1024Terapagos-Terastal.png'}:p).filter(p=>!deleted.has(p.id)&&(p.isShinyMega||(String(p.variant||'').toLowerCase()!=='shiny'&&!String(p.id||'').toLowerCase().includes('shiny')&&!String(p.name||'').toLowerCase().startsWith('shiny '))))}
 const TYPE_LABELS={normal:'Thường',fire:'Lửa',water:'Nước',electric:'Điện',grass:'Cỏ',ice:'Băng',fighting:'Giác đấu',poison:'Độc',ground:'Đất',flying:'Bay',psychic:'Tâm linh',bug:'Côn trùng',rock:'Đá',ghost:'Ma',dragon:'Rồng',dark:'Bóng tối',steel:'Thép',fairy:'Tiên'};
-function pokemonTypes(p){const raw=String(p?.type||'');const out=[];Object.entries(TYPE_LABELS).forEach(([en,vi])=>{if(new RegExp('\\b'+en+'\\b','i').test(raw)||raw.toLowerCase().includes(vi.toLowerCase()))out.push(en)});return [...new Set(out)]}
+function pokemonTypes(p){
+ if(!p)return [];
+ const labels={normal:'normal',thường:'normal',fire:'fire',lửa:'fire',water:'water',nước:'water',electric:'electric',điện:'electric',grass:'grass',cỏ:'grass',ice:'ice',băng:'ice',fighting:'fighting',giác đấu:'fighting',poison:'poison',độc:'poison',ground:'ground',đất:'ground',flying:'flying',bay:'flying',psychic:'psychic','tâm linh':'psychic',bug:'bug','côn trùng':'bug',rock:'rock',đá:'rock',ghost:'ghost',ma:'ghost',dragon:'dragon',rồng:'dragon',dark:'dark','bóng tối':'dark',steel:'steel',thép:'steel',fairy:'fairy',tiên:'fairy'};
+ const candidates=[];
+ const add=v=>{if(Array.isArray(v))v.forEach(add);else if(v&&typeof v==='object'){if(v.name)add(v.name);else if(v.type)add(v.type)}else if(v!=null)candidates.push(String(v))};
+ add(p.type);add(p.types);add(p.type1);add(p.type2);add(p.primaryType);add(p.secondaryType);
+ const raw=candidates.join(' ').toLowerCase();
+ const out=[];
+ Object.entries(labels).forEach(([label,key])=>{if(raw.includes(label.toLowerCase())&&!out.includes(key))out.push(key)});
+ return out;
+}
 const TYPE_ICONS={normal:'⚪',fire:'🔥',water:'💧',electric:'⚡',grass:'🌿',ice:'❄️',fighting:'🥊',poison:'☠️',ground:'🌍',flying:'🪽',psychic:'🔮',bug:'🐛',rock:'🪨',ghost:'👻',dragon:'🐉',dark:'🌑',steel:'⚙️',fairy:'✨'};
 const TIERS=['B','A','S','S+','SS'];
 function typeBadges(p){const ts=pokemonTypes(p);return ts.length?ts.map(t=>`<span class="type-icon">${TYPE_ICONS[t]||'🔹'} ${TYPE_LABELS[t]}</span>`).join(' '):'<span class="type-icon">❔ Chưa rõ hệ</span>'}
