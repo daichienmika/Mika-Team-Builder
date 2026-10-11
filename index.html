@@ -53,6 +53,15 @@ header{display:flex;align-items:center;justify-content:space-between;gap:15px;fl
 .saved-mini.empty-mini{color:#8490b5;font-size:20px}
 .saved-mini.mini-image-missing:after{content:'?';color:#8490b5;font-size:20px}
 @media(max-width:520px){.saved-mini{height:46px}.saved-mini-team{gap:3px}.saved-mini-name{font-size:7px}}
+
+/* Ảnh và tên bảo vật ở cả thẻ Pokémon lẫn bảng Tổng quan */
+.attached-relics{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:4px;margin:6px 0;width:100%}
+.attached-relic{display:inline-flex;align-items:center;gap:4px;max-width:100%;padding:2px 5px;border:1px solid #37627d;border-radius:7px;background:rgba(10,37,55,.72);color:#c7efff;font-size:.68rem;line-height:1.2}
+.attached-relic img{width:25px;height:25px;object-fit:contain;flex-shrink:0}
+.attached-relic span{max-width:105px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.attached-relics-empty{font-size:.65rem;color:#8792b5;margin:5px 0;text-align:center}
+#teamSummary .attached-relics{justify-content:flex-start;margin-top:4px}
+#teamSummary .attached-relic img{width:22px;height:22px}
 </style>
 </head>
 <body>
@@ -701,7 +710,21 @@ function findEmpty(){return state.team.findIndex(x=>!x)}
 function addToTeam(id){const p=getPokemon(id);if(!p)return;if(state.team.some(x=>x&&x.pokemonId===id)){toast('Pokémon này đã có trong đội hình.');return}const i=findEmpty();if(i<0){toast('Đội hình đã đủ 6 Pokémon. Hãy xóa một vị trí trước.');return}state.team[i]={pokemonId:id,pokemonName:p.name,image:p.image,type:p.type,dex:p.dex,tier:p.tier,variant:p.variant,relics:[],relicSlots:state.defaultSlots||3};state.selectedMember=i;saveState();renderAll();toast('Đã thêm '+p.name+' vào đội hình!')}
 function removeFromTeam(i){state.team[i]=null;saveState();renderAll()}
 function clearTeam(){if(!confirm('Bạn có chắc muốn xóa toàn bộ đội hình hiện tại?'))return;state.team=Array(6).fill(null);state.selectedMember=0;saveState();renderAll()}
-function renderTeam(){const el=document.getElementById('teamGrid');el.innerHTML=state.team.map((member,i)=>{if(!member)return `<div class="slot"><span class="num">VỊ TRÍ ${i+1}</span><div class="empty-ball">＋</div><strong>Vị trí trống</strong><span class="sub">Chưa chọn Pokémon</span><button class="primary small" style="margin-top:12px" onclick="pickForSlot(${i})">Chọn Pokémon</button></div>`;const p=getPokemon(member.pokemonId)||((member.pokemonName||member.image)?{id:member.pokemonId,name:member.pokemonName||'Pokémon',image:member.image||'',type:member.type||'Unknown',dex:member.dex||'Pokémon',tier:member.tier||'B',variant:member.variant||''}:null);if(!p)return `<div class="slot"><span class="num">VỊ TRÍ ${i+1}</span><div class="empty-ball">?</div><strong>Không tìm thấy Pokémon</strong><button class="small danger" onclick="removeFromTeam(${i})">Xóa</button></div>`;return `<div class="slot filled"><span class="num">VỊ TRÍ ${i+1}</span><img src="${safeImg(p.image)}" onerror="this.src=PLACEHOLDER" alt=""><div class="poke-name">${escapeHTML(p.name)}</div><div class="poke-id">${escapeHTML(p.dex||'Pokémon')}</div><div style="margin-top:5px">${typeBadges(p)}</div><div style="margin-top:4px">${tierBadge(p)}</div><div class="slot-actions"><button class="small" onclick="pickForSlot(${i})">Đổi</button><button class="small" onclick="editMember(${i})">💎 Bảo vật</button>${isAdmin()?`<button class="small" onclick="editPokemon('${p.id}')">✏️</button>`:''}<button class="small danger" onclick="removeFromTeam(${i})">✕</button></div></div>`}).join('');document.getElementById('teamName').value=state.teamName||'Đội hình mới';}
+
+function renderAttachedRelics(member){
+ const ids=Array.isArray(member?.relics)?member.relics:[];
+ const relics=ids.map(item=>{
+   if(item && typeof item==='object') return item;
+   return state.relics.find(r=>r.id===item);
+ }).filter(Boolean);
+ if(!relics.length) return '<div class="attached-relics-empty">Chưa gắn bảo vật</div>';
+ return '<div class="attached-relics">'+relics.map(r=>{
+   const name=r.name||r.title||'Bảo vật';
+   const image=r.image||r.img||r.imageUrl||'';
+   return `<span class="attached-relic" title="${escapeHTML(name)}"><img src="${safeImg(image)}" alt="" onerror="this.style.display='none'"><span>${escapeHTML(name)}</span></span>`;
+ }).join('')+'</div>';
+}
+function renderTeam(){const el=document.getElementById('teamGrid');el.innerHTML=state.team.map((member,i)=>{if(!member)return `<div class="slot"><span class="num">VỊ TRÍ ${i+1}</span><div class="empty-ball">＋</div><strong>Vị trí trống</strong><span class="sub">Chưa chọn Pokémon</span><button class="primary small" style="margin-top:12px" onclick="pickForSlot(${i})">Chọn Pokémon</button></div>`;const p=getPokemon(member.pokemonId)||((member.pokemonName||member.image)?{id:member.pokemonId,name:member.pokemonName||'Pokémon',image:member.image||'',type:member.type||'Unknown',dex:member.dex||'Pokémon',tier:member.tier||'B',variant:member.variant||''}:null);if(!p)return `<div class="slot"><span class="num">VỊ TRÍ ${i+1}</span><div class="empty-ball">?</div><strong>Không tìm thấy Pokémon</strong><button class="small danger" onclick="removeFromTeam(${i})">Xóa</button></div>`;return `<div class="slot filled"><span class="num">VỊ TRÍ ${i+1}</span><img src="${safeImg(p.image)}" onerror="this.src=PLACEHOLDER" alt=""><div class="poke-name">${escapeHTML(p.name)}</div><div class="poke-id">${escapeHTML(p.dex||'Pokémon')}</div><div style="margin-top:5px">${typeBadges(p)}</div><div style="margin-top:4px">${tierBadge(p)}</div>${renderAttachedRelics(member)}<div class="slot-actions"><button class="small" onclick="pickForSlot(${i})">Đổi</button><button class="small" onclick="editMember(${i})">💎 Bảo vật</button>${isAdmin()?`<button class="small" onclick="editPokemon('${p.id}')">✏️</button>`:''}<button class="small danger" onclick="removeFromTeam(${i})">✕</button></div></div>`}).join('');document.getElementById('teamName').value=state.teamName||'Đội hình mới';}
 function pickForSlot(i){window.pendingFeaturedSlot=undefined;openTab('pokemon');window.pendingSlot=i;renderPokemonCatalog();document.getElementById('pokeSearch').focus();toast('Chọn Pokémon rồi nhấn “Dùng vị trí '+(i+1)+'”.')}
 function editMember(i){state.selectedMember=i;openTab('relics');renderRelics()}
 function renderStats(){
@@ -718,7 +741,7 @@ function renderStats(){
    const p=resolveTeamPokemon(m);
    const name=p?.name||m.pokemonName||m.name||'Pokémon';
    const image=p?.image||m.image||'';
-   return `<div style="display:flex;gap:8px;align-items:center;margin:8px 0"><img src="${safeImg(image)}" onerror="this.src=PLACEHOLDER" style="width:38px;height:38px;object-fit:contain"><div><b>${escapeHTML(name)}</b><div class="muted" style="font-size:.78rem">${(m.relics||[]).filter(Boolean).length} bảo vật đang gắn</div></div></div>`;
+   return `<div style="display:flex;gap:8px;align-items:center;margin:8px 0"><img src="${safeImg(image)}" onerror="this.src=PLACEHOLDER" style="width:38px;height:38px;object-fit:contain"><div><b>${escapeHTML(name)}</b><div class="muted" style="font-size:.78rem">${(m.relics||[]).filter(Boolean).length} bảo vật đang gắn</div>${renderAttachedRelics(m)}</div></div>`;
  }).join(''):'Chưa có Pokémon trong đội hình.';
 }
 
