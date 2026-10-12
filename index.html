@@ -300,7 +300,7 @@ const FEATURED_FORMS=[
  ['venusaur',3,'Cỏ / Độc'],['blastoise',9,'Nước'],['beedrill',15,'Côn trùng / Độc'],['pidgeot',18,'Thường / Bay'],['alakazam',65,'Tâm linh'],['slowbro',80,'Nước / Tâm linh'],['steelix',208,'Thép / Đất'],['scizor',212,'Côn trùng / Thép'],['heracross',214,'Côn trùng / Giác đấu'],['houndoom',229,'Bóng tối / Lửa'],['tyranitar',248,'Đá / Bóng tối'],['sceptile',254,'Cỏ'],['blaziken',257,'Lửa / Giác đấu'],['swampert',260,'Nước / Đất'],['aggron',306,'Thép / Đá'],['manectric',310,'Điện'],['absol',359,'Bóng tối'],['metagross',376,'Thép / Tâm linh'],['lopunny',428,'Thường'],['abomasnow',460,'Cỏ / Băng'],['gallade',475,'Tâm linh / Giác đấu'],['audino',531,'Thường'],['diancie',719,'Đá / Tiên']
  ].map(([n,id,t])=>({id:'form_mega_'+n,name:'Mega '+n.charAt(0).toUpperCase()+n.slice(1),dex:'MEGA',type:'Mega • '+t,tier:'S',image:`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${({3:10033,9:10036,15:10090,18:10073,65:10037,80:10071,208:10072,212:10046,214:10047,229:10048,248:10049,254:10065,257:10050,260:10064,306:10053,310:10055,359:10057,376:10076,428:10088,460:10060,475:10068,531:10069,719:10075})[id]||id}.png`,variant:'Mega'})),
  ...[
- ['kangaskhan',115,'Thường',10039],['pinsir',127,'Côn trùng / Bay',10040],['gyarados',130,'Nước / Bóng tối',10041],['aerodactyl',142,'Đá / Bay',10042],['ampharos',181,'Điện / Rồng',10045],['mawile',303,'Thép / Tiên',10052],['banette',354,'Ma',10056],['sharpedo',319,'Nước / Bóng tối',10070],['camerupt',323,'Lửa / Đất',10087],['glalie',362,'Băng',10074],['salamence',373,'Rồng / Bay',10089],['latias',380,'Rồng / Tâm linh',10062],['latios',381,'Rồng / Tâm linh',10063],['swablu-altaria',334,'Rồng / Tiên',10066],['medicham',308,'Giác đấu / Tâm linh',10054],['pidgeot',18,'Thường / Bay',10073],['ttar',248,'Đá / Bóng tối',10049]
+ ['kangaskhan',115,'Thường',10039],['pinsir',127,'Côn trùng / Bay',10040],['gyarados',130,'Nước / Bóng tối',10041],['aerodactyl',142,'Đá / Bay',10042],['ampharos',181,'Điện / Rồng',10045],['mawile',303,'Thép / Tiên',10052],['banette',354,'Ma',10056],['sharpedo',319,'Nước / Bóng tối',10070],['camerupt',323,'Lửa / Đất',10087],['glalie',362,'Băng',10074],['salamence',373,'Rồng / Bay',10089],['latias',380,'Rồng / Tâm linh',10062],['latios',381,'Rồng / Tâm linh',10063],['swablu-altaria',334,'Rồng / Tiên',10066],['medicham',308,'Giác đấu / Tâm linh',10054],
  ].map(([n,id,t,formId])=>({id:'form_mega_extra_'+n,name:'Mega '+(n==='swablu-altaria'?'Altaria':n==='ttar'?'Tyranitar':n.charAt(0).toUpperCase()+n.slice(1)),dex:'MEGA',type:'Mega • '+t,tier:'S',image:`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${formId}.png`,variant:'Mega'})),
  ...FEATURED_IDS.map(id=>({id:'form_shiny_'+id,name:'Shiny '+(({6:'Charizard',9:'Blastoise',25:'Pikachu',94:'Gengar',150:'Mewtwo',384:'Rayquaza',448:'Lucario',658:'Greninja',700:'Sylveon'})[id]||('Pokémon #'+id)),dex:'SHINY',type:(({6:'Lửa / Bay',9:'Nước',25:'Điện',94:'Ma / Độc',150:'Tâm linh',384:'Rồng / Bay',448:'Giác đấu / Thép',658:'Nước / Bóng tối',700:'Tiên'})[id]||'Chưa rõ hệ'),tier:'B',image:`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/${id}.png`,variant:'Shiny'})),
  ...[
@@ -313,6 +313,8 @@ const FEATURED_FORMS=[
 ];
 const FEATURED_POKEMON=FEATURED_IDS.map(id=>({id:'dex_'+id,name:({25:'Pikachu',6:'Charizard',9:'Blastoise',3:'Venusaur',94:'Gengar',150:'Mewtwo',384:'Rayquaza',448:'Lucario',658:'Greninja',700:'Sylveon',716:'Xerneas',717:'Yveltal',800:'Necrozma',809:'Melmetal',887:'Dragapult',888:'Zacian',1000:'Gholdengo'})[id]||('#'+id+' Pokémon'),dex:id,type:({1:'Grass / Poison',3:'Grass / Poison',6:'Fire / Flying',9:'Water',25:'Electric',39:'Normal / Fairy',94:'Ghost / Poison',130:'Water / Flying',133:'Normal',150:'Psychic',149:'Dragon / Flying',212:'Bug / Steel',248:'Rock / Dark',282:'Psychic / Fairy',373:'Dragon / Flying',376:'Steel / Psychic',384:'Dragon / Flying',445:'Dragon / Ground',448:'Fighting / Steel',461:'Dark / Ice',487:'Ghost / Dragon',491:'Dark',493:'Normal',635:'Dark / Dragon',658:'Water / Dark',700:'Fairy',716:'Fairy',717:'Dark / Flying',719:'Rock / Fairy',724:'Grass / Ghost',778:'Ghost / Fairy',800:'Psychic',809:'Steel',887:'Dragon / Ghost',888:'Fairy / Steel',1000:'Steel / Ghost'})[id]||'Unknown',image:`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`}));
 const EXTRA_FORMS=[
+  {id:'form_zacian_crowned_sword',name:'Zacian (Crowned Sword)',dex:888,type:'Fairy / Steel',tier:'SS',image:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10188.png',variant:'Crowned Sword'},
+  {id:'form_zamazenta_crowned_shield',name:'Zamazenta (Crowned Shield)',dex:889,type:'Fighting / Steel',tier:'SS',image:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10189.png',variant:'Crowned Shield'},
  {id:'form_groudon',name:'Groudon',dex:383,type:'Ground',tier:'S+',image:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/383.png',variant:'Standard'},
  {id:'form_kyogre',name:'Kyogre',dex:382,type:'Water',tier:'S+',image:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/382.png',variant:'Standard'},
  {id:'form_palkia',name:'Palkia',dex:484,type:'Water / Dragon',tier:'S+',image:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/484.png',variant:'Standard'},
@@ -782,21 +784,32 @@ function renderTeam(){const el=document.getElementById('teamGrid');el.innerHTML=
 function pickForSlot(i){window.pendingFeaturedSlot=undefined;openTab('pokemon');window.pendingSlot=i;renderPokemonCatalog();document.getElementById('pokeSearch').focus();toast('Chọn Pokémon rồi nhấn “Dùng vị trí '+(i+1)+'”.')}
 function editMember(i){state.selectedMember=i;openTab('relics');renderRelics()}
 function renderStats(){
- const members=state.team.filter(Boolean);
- document.getElementById('statCount').textContent=members.length+'/6';
- document.getElementById('statRelics').textContent=members.reduce((n,m)=>n+(m.relics||[]).filter(Boolean).length,0);
- document.getElementById('statCustom').textContent=members.filter(m=>state.pokemon.some(p=>p.id===(m.pokemonId||m.id))).length;
- const counts={};
- members.forEach(m=>{const p=resolveTeamPokemon(m);pokemonTypes(p).forEach(t=>counts[t]=(counts[t]||0)+1)});
- const typeEl=document.getElementById('activeTypeSummary');
- if(typeEl)typeEl.innerHTML=Object.keys(counts).length?Object.entries(counts).map(([t,n])=>`<span class="badge type-badge">${TYPE_LABELS[t]||t} × ${n}</span>`).join(' '):'Chưa có dữ liệu hệ cho Pokémon đang chọn.';
- const summary=document.getElementById('teamSummary');
- summary.innerHTML=members.length?members.map(m=>{
-   const p=resolveTeamPokemon(m);
-   const name=p?.name||m.pokemonName||m.name||'Pokémon';
-   const image=p?.image||m.image||'';
-   return `<div style="display:flex;gap:8px;align-items:center;margin:8px 0"><img src="${safeImg(image)}" onerror="this.src=PLACEHOLDER" style="width:38px;height:38px;object-fit:contain"><div><b>${escapeHTML(name)}</b><div class="muted" style="font-size:.78rem">${(m.relics||[]).filter(Boolean).length} bảo vật đang gắn</div>${renderAttachedRelics(m)}</div></div>`;
- }).join(''):'Chưa có Pokémon trong đội hình.';
+  const members=state.team.filter(Boolean);
+  document.getElementById('statCount').textContent=members.length+'/6';
+  document.getElementById('statRelics').textContent=members.reduce((n,m)=>n+(m.relics||[]).filter(Boolean).length,0);
+  document.getElementById('statCustom').textContent=members.filter(m=>state.pokemon.some(p=>p.id===(m.pokemonId||m.id))).length;
+  const counts={};let unknownTypes=0;
+  members.forEach(m=>{
+    // Nếu Pokémon không còn trong kho, dùng hệ đã lưu trực tiếp trong ô đội hình.
+    const p=resolveTeamPokemon(m)||{name:m.pokemonName||m.name||'Pokémon',type:m.type||m.types||'',type1:m.type1,type2:m.type2,types:m.types};
+    const types=pokemonTypes(p);
+    if(!types.length){unknownTypes++;return;}
+    types.forEach(t=>counts[t]=(counts[t]||0)+1);
+  });
+  const typeEl=document.getElementById('activeTypeSummary');
+  if(typeEl){
+    const rows=Object.entries(counts).sort((a,b)=>a[0].localeCompare(b[0]));
+    typeEl.innerHTML=(rows.length?rows.map(([t,n])=>`<span class="badge type-badge">${TYPE_ICONS[t]||'🔹'} ${TYPE_LABELS[t]||t}: <b>${n}</b></span>`).join(' '):'Chưa có dữ liệu hệ cho đội hình.')+
+      (unknownTypes?` <span class="badge type-badge">❔ Chưa rõ hệ: <b>${unknownTypes}</b></span>`:'')+
+      `<div class="sub" style="margin-top:6px">Đã đếm hệ cho ${members.length-unknownTypes}/${members.length} Pokémon. Pokémon hai hệ được tính vào cả hai hệ.</div>`;
+  }
+  const summary=document.getElementById('teamSummary');
+  summary.innerHTML=members.length?members.map(m=>{
+    const p=resolveTeamPokemon(m);
+    const name=p?.name||m.pokemonName||m.name||'Pokémon';
+    const image=p?.image||m.image||'';
+    return `<div style="display:flex;gap:8px;align-items:center;margin:8px 0"><img src="${safeImg(image)}" onerror="this.src=PLACEHOLDER" style="width:38px;height:38px;object-fit:contain"><div><b>${escapeHTML(name)}</b><div class="muted" style="font-size:.78rem">${(m.relics||[]).filter(Boolean).length} bảo vật đang gắn</div>${renderAttachedRelics(m)}</div></div>`;
+  }).join(''):'Chưa có Pokémon trong đội hình.';
 }
 
 function renderAll(){renderTeam();renderStats();renderPokemonCatalog();renderRelics();renderSaved();if(document.getElementById("featuredForm")&&!document.getElementById("featuredForm").classList.contains("hidden"))renderFeaturedDraftBuilder()}
